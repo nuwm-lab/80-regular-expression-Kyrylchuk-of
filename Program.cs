@@ -1,32 +1,59 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 
-class Program
+namespace TextProcessor // Додана назва простору імен для організації коду
 {
-    static void Main()
+    /// <summary>
+    /// Основна програма для роботи з текстом.
+    /// </summary>
+    class Program
     {
-        Console.WriteLine("Введіть текст:");
-        string input = Console.ReadLine();
+        /// <summary>
+        /// Точка входу в програму.
+        /// </summary>
+        static void Main()
+        {
+            Console.WriteLine("Введіть текст:"); // Запит тексту у користувача
+            string userInput = Console.ReadLine(); // Зчитування введеного тексту
 
-        string result = OOk(input);
+            // Виклик методу для додавання "ОК" після кожної літери "о"
+            string processedText = TextModifier.AddOkAfterO(userInput);
 
-        Console.WriteLine("Результат:");
-        Console.WriteLine(result);
+            Console.WriteLine("Результат:");
+            Console.WriteLine(processedText); // Виведення результату
+        }
     }
 
-    static string OOk(string input)
+    /// <summary>
+    /// Клас для модифікації тексту.
+    /// </summary>
+    public static class TextModifier
     {
-        Regex regex = new Regex("[оo]", RegexOptions.IgnoreCase);
-        MatchCollection matches = regex.Matches(input);
-        int offset = 0;
-
-        foreach (Match match in matches)
+        /// <summary>
+        /// Метод для додавання "ОК" після кожної літери "о" (незалежно від регістру).
+        /// </summary>
+        /// <param name="input">Вхідний текст.</param>
+        /// <returns>Модифікований текст.</returns>
+        public static string AddOkAfterO(string input)
         {
-            int index = match.Index + offset;
-            input = input.Substring(0, index) + match.Value + "ОК" + input.Substring(index + match.Length);
-            offset += 2;
-        }
+            // Використання регулярного виразу для пошуку букв "о" (українська "о" або латинська "o")
+            Regex letterORegex = new Regex("[оo]", RegexOptions.IgnoreCase);
 
-        return input;
+            // Пошук усіх збігів у тексті
+            MatchCollection matches = letterORegex.Matches(input);
+
+            // Зсув для коректного вставлення додаткового тексту
+            int offset = 0;
+
+            // Проходження по всіх знайдених збігах
+            foreach (Match match in matches)
+            {
+                int currentIndex = match.Index + offset; // Актуальний індекс у тексті
+                input = input.Substring(0, currentIndex) + match.Value + "ОК" + input.Substring(currentIndex + match.Length);
+                offset += 2; // Зсув збільшується на довжину доданого тексту ("ОК" має 2 символи)
+            }
+
+            return input; // Повернення модифікованого тексту
+        }
     }
 }
